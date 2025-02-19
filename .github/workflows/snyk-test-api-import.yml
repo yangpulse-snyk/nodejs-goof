@@ -1,0 +1,28 @@
+name: Import repo via API
+on: push
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        id: check_vuln
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=critical
+            --json-file-output=snyk.json
+      - name: install requirements
+        run: |
+          python3 -m pip install --upgrade pip
+          if [ -f scripts/requirements.txt ]; then pip install -r scripts/requirements.txt; fi
+      - name: Create issues if vulnerabilies are found
+        id: create_issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d '/' -f 2)
+          python3 scripts/import_repo.py 
+          --owner github.repository_owner --name "$REPO_NAME" --snyk-org env.SNYK_ORG --integration-id env.SNYK_INTEGRATION_ID --branch github.ref_name
