@@ -4,23 +4,27 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@master
-      # - name: Run Snyk to check for vulnerabilities
-      #   id: check_vuln
-      #   uses: snyk/actions/node@master
-      #   continue-on-error: true
-      #   env:
-      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      #   with:
-      #     args: --severity-threshold=critical
-      #       --json-file-output=snyk.json
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        id: check_vuln
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=critical
+            --json-file-output=snyk.json
       - name: install requirements
         run: |
           python3 -m pip install --upgrade pip
           if [ -f scripts/requirements.txt ]; then pip install -r scripts/requirements.txt; fi
+      - name: Get repo name and set as environment variable
+        id: get_repo_name
+        run: |
+          REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)
+          echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
       - name: Import repo via API
         id: import_repo
         run: |
-          REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2) &&
           python3 scripts/import_repo.py 
           --owner ${{ github.repository_owner }} --name $REPO_NAME --snyk-org ${{ vars.SNYK_ORG }}--integration-id ${{ vars.SNYK_INTEGRATION_ID }} --branch ${{ github.ref_name }}
