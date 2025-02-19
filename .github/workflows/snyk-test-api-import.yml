@@ -26,4 +26,4 @@ jobs:
         id: import_repo
         run: |
           python3 scripts/import_repo.py 
-          --owner ${{ github.repository_owner }} --name ${{ env.REPO_NAME }} --snyk-org ${{ vars.SNYK_ORG }}--integration-id ${{ vars.SNYK_INTEGRATION_ID }} --branch ${{ github.ref_name }}
+          --owner ${{ github.repository_owner }} --name ${{ env.REPO_NAME }} --snyk-org ${{ vars.SNYK_ORG }} --integration-id ${{ vars.SNYK_INTEGRATION_ID }} --branch ${{ github.ref_name }}
