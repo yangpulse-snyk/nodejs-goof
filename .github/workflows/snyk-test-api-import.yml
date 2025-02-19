@@ -21,6 +21,6 @@ jobs:
       - name: Import repo via API
         id: import_repo
         run: |
-          REPO_NAME=$(echo "${{ github.repository }}" | cut -d '/' -f 2)
+          REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)
           python3 scripts/import_repo.py 
-          --owner github.repository_owner --name "$REPO_NAME" --snyk-org env.SNYK_ORG --integration-id env.SNYK_INTEGRATION_ID --branch github.ref_name
+          --owner ${{ github.repository_owner }} --name $REPO_NAME --snyk-org vars.SNYK_ORG --integration-id vars.SNYK_INTEGRATION_ID --branch ${{ github.ref_name }}
