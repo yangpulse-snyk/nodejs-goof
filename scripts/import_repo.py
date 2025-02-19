@@ -62,4 +62,4 @@ if __name__ == "__main__":
         args.branch,
     )
     response = client.import_repo()
-    print("status_code", response.status_code)
+    print("status_code", response.status_code, response.text)
